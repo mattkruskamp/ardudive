@@ -1,14 +1,15 @@
+
 // include the library code:
 #include <LiquidCrystal.h>
 #include <math.h>
+#include <Pressure.h>
 
 // lcd init
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 int contrastPin = 6;
 
 // pressure init
-int maxPounds = 25;
-int pressurePin = A0;
+Pressure pressure(A0, 25);
 int currentDepth = 0;
 
 // temp init
@@ -36,6 +37,18 @@ void update() {
   delay(100);
 }
 
+void setup() {
+  // lcd columns and rows
+  lcd.begin(16, 2);
+  
+  // initialize serial port
+  Serial.begin(9600);
+  
+  // set the contrast information
+  pinMode(contrastPin, OUTPUT);
+  pinMode(beepPin, OUTPUT);
+}
+
 void draw() {
   // set the lcd contrast
   analogWrite(contrastPin, 50);
@@ -54,16 +67,7 @@ void draw() {
 
 void updateDepth()
 {
-  // read the sensor and calculate the footage
-  int reading = analogRead(pressurePin);
-  int pounds = maxPounds * reading / 1024;
-  int feet = pounds * 33 / 14.7;
-  
-  // normalize to be more concise
-  if(feet < 6) { feet = 0; }
-  // if feet < 5 then feet = 0
-  currentDepth = feet;
-  
+  currentDepth = pressure.getDepth();
   // caclulate alarm
   depthAlarm = (currentDepth > 30) ? true : false;
 }
