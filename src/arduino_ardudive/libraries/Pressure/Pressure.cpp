@@ -23,7 +23,7 @@ int Pressure::getDepth()
 	int reading, pounds, feet;
 	
 	// calculate the depth
-	reading = this->getRawPressure();
+	reading = getRawPressure();
 	pounds = _maxPressure * reading / 1024;
 	feet = pounds * 33 / 14.7;
 	

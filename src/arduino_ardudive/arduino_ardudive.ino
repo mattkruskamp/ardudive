@@ -1,7 +1,5 @@
-
-// include the library code:
+#include <Thermistor.h>
 #include <LiquidCrystal.h>
-#include <math.h>
 #include <Pressure.h>
 
 // lcd init
@@ -13,7 +11,8 @@ Pressure pressure(A0, 25);
 int currentDepth = 0;
 
 // temp init
-int thermPin = A1;
+Thermistor thermistor(A1, 9870.0, 1.009249522e-03, 
+  2.378405444e-04, 2.019202697e-07);
 int currentTemp = 0;
 
 // sound init
@@ -73,17 +72,7 @@ void updateDepth()
 }
 
 void updateTemp() {
-  int Vo = analogRead(thermPin);; 
-  float R = 9870.0; //9870.0; // Fixed resistance in the voltage divider
-  float logRt, Rt, T;
-  float c1 = 1.009249522e-03, 
-        c2 = 2.378405444e-04, 
-        c3 = 2.019202697e-07;
-  Rt = R * (1024.0 / (float)Vo - 1.0);
-  logRt = log(Rt);
-  T = (1.0 / (c1 + c2 * logRt + c3 * logRt * logRt * logRt)) - 273.15;
-  T = (T * 9.0) / 5.0 + 32.0;
-  currentTemp = (int)T;
+  currentTemp = thermistor.getTemperature();
 }
 
 void updateAlarm() {
